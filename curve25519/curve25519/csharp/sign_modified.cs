@@ -41,14 +41,14 @@ namespace org.whispersystems.curve25519.csharp
             /* NEW: add suffix of random data */
             Array.Copy(random, 0, sm, (int)(mlen + 64), 64);
 
-            sha512provider.calculateDigest(out nonce, sm, mlen + 128);
+            sha512provider.calculateDigest(nonce, sm, mlen + 128);
             Array.Copy(pk, 0, sm, 32, 32);
 
             Sc_reduce.sc_reduce(nonce);
             Ge_scalarmult_base.ge_scalarmult_base(R, nonce);
             Ge_p3_tobytes.ge_p3_tobytes(sm, R);
 
-            sha512provider.calculateDigest(out hram, sm, mlen + 64);
+            sha512provider.calculateDigest(hram, sm, mlen + 64);
             Sc_reduce.sc_reduce(hram);
             byte[] S = new byte[32];
             Sc_muladd.sc_muladd(S, hram, sk, nonce); /* NEW: Use privkey directly */

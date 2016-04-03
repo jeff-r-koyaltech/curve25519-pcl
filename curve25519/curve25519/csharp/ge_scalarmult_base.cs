@@ -35,9 +35,9 @@ public
 #endif
 static int negative(sbyte b)
         {
-            long x = b;//Value will be expanded and given a sign, according to the signed byte (0x0000....0b vs 0xFFFF....b1
+            long x = b;//Value will be expanded and given a sign bit, according to the signed byte (0x0000....0b vs 0xFFFF....b1
             ulong ux = (ulong)x; //make it unsigned for zero-filled bit shifting
-            ux = ux >> 63; /* 1: yes; 0: no */
+            ux = ux >> 63; /* Shift to just the sign bit - 1: yes; 0: no */
             return (int)ux;
         }
 

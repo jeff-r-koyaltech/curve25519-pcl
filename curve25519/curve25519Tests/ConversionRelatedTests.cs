@@ -1,17 +1,17 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using Windows.Security.Cryptography.Core;
+using Windows.Storage.Streams;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace curve25519Tests
 {
+    /// <summary>
+    /// These tests cover functionality that was not a simple find/replace from Java to C#.
+    /// </summary>
     [TestClass]
     public class ConversionRelatedTests
     {
-        public void TestExpectedDataTypeSizes()
-        {
-            //TODO: Check 64 bit 32 bit related sizes of uint, byte, etc?
-            //Research online, then implement here
-        }
-
         /// <summary>
         /// Basic equality / inequality sanity check
         /// </summary>
@@ -55,7 +55,7 @@ namespace curve25519Tests
         }
 
         /// <summary>
-        /// Verifies org.whispersystems.curve25519.csharp.Ge_scalarmult_base.negative properly detects negative numbers.
+        /// Verifies org.whispersystems.curve25519.csharp.Ge_scalarmult_base.negative properly detects negative numbers in a branch-less way.
         /// </summary>
         [TestMethod]
         public void TestNegative_Ge_scalarmult_base_negative()
@@ -69,6 +69,36 @@ namespace curve25519Tests
                     result2 = 1;
                 Assert.AreEqual<int>(result, result2);
             }
+        }
+
+        /// <summary>
+        /// Make sure Bouncy Castle's Sha512 implementation matches with other hashing functions known to provide good values.
+        /// </summary>
+        [TestMethod]
+        public void TestSha512ProviderConsistency()
+        {
+            byte [] message = System.Text.Encoding.UTF8.GetBytes(
+                    "abcdefghbcdefghicDEFghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu");
+            int digestExpectedLength = 64; //for SHA 512, this is the expected length
+
+            //The Bouncy Castle way
+            org.whispersystems.curve25519.BouncyCastleDotNETSha512Provider provider = new org.whispersystems.curve25519.BouncyCastleDotNETSha512Provider();
+            byte[] digestActual = new byte[digestExpectedLength];
+            provider.calculateDigest(digestActual, message, message.Length);
+
+            //The WinRT way
+            HashAlgorithmProvider sha512Provider = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha512);
+            IBuffer bMessage = WindowsRuntimeBufferExtensions.AsBuffer(message);
+            IBuffer bDigest = sha512Provider.HashData(bMessage);
+            byte [] digestWinRT = WindowsRuntimeBufferExtensions.ToArray(bDigest);
+
+            //The PCLCrypto way
+            PCLCrypto.IHashAlgorithmProvider sha512PCLProvider = PCLCrypto.WinRTCrypto.HashAlgorithmProvider.OpenAlgorithm(PCLCrypto.HashAlgorithm.Sha512);
+            byte [] digestPCL = sha512PCLProvider.HashData(message);
+
+            //Did we get the same value for all ways?
+            CollectionAssert.AreEqual(digestWinRT, digestActual);
+            CollectionAssert.AreEqual(digestPCL, digestWinRT);
         }
     }
 }
