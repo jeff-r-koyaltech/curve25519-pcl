@@ -1,4 +1,5 @@
 
+using curve25519;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -40,17 +41,17 @@ namespace org.whispersystems.curve25519
 
         public static Curve25519 getInstance(string type)
         {
-            return getInstance(type, null);
+            return getInstance(type, new BouncyCastleDotNETSha512Provider(), new PCLSecureRandomProvider());
         }
 
-        public static Curve25519 getInstance(string type, SecureRandomProvider random)
+        public static Curve25519 getInstance(string type, csharp.Sha512 sha, SecureRandomProvider random)
         {
             //if      (NATIVE.equals(type)) return new Curve25519(constructNativeProvider(random));
             //else if (JAVA.equals(type))   return new Curve25519(constructJavaProvider(random));
             //else if (J2ME.equals(type))   return new Curve25519(constructJ2meProvider(random));
             //else if (BEST.Equals(type)) return new Curve25519(constructOpportunisticProvider(random));
             if (CSHARP.Equals(type))
-                return new Curve25519(constructCSharpProvider(random));
+                return new Curve25519(constructCSharpProvider(sha, random));
             else
                 throw new NoSuchProviderException(type);
         }
@@ -72,6 +73,21 @@ namespace org.whispersystems.curve25519
         public bool isNative()
         {
             return provider.isNative();
+        }
+
+        public byte [] generatePrivateKey()
+        {
+            return provider.generatePrivateKey();
+        }
+
+        public byte[] generatePrivateKey(byte[] random)
+        {
+            return provider.generatePrivateKey(random);
+        }
+
+        public byte [] generatePublicKey(byte [] privateKey)
+        {
+            return provider.generatePublicKey(privateKey);
         }
 
         /**
@@ -109,6 +125,11 @@ namespace org.whispersystems.curve25519
         public byte[] calculateSignature(byte[] privateKey, byte[] message)
         {
             byte[] random = provider.getRandom(64);
+            return calculateSignature(random, privateKey, message);
+        }
+
+        public byte[] calculateSignature(byte[] random, byte[] privateKey, byte[] message)
+        {
             return provider.calculateSignature(random, privateKey, message);
         }
 
@@ -125,9 +146,9 @@ namespace org.whispersystems.curve25519
             return provider.verifySignature(publicKey, message, signature);
         }
 
-        private static Curve25519Provider constructCSharpProvider(SecureRandomProvider random)
+        private static Curve25519Provider constructCSharpProvider(csharp.Sha512 sha, SecureRandomProvider random)
         {
-            return constructClass(typeof(BaseCSharpCurve25519Provider), new object[] { new org.whispersystems.curve25519.BouncyCastleDotNETSha512Provider(), random });
+            return constructClass(typeof(CSharpCurve25519Provider), new object[] { sha, random });
         }
         /* TODO: Implement as appropriate to grow the flexibility of the library...
         private static Curve25519Provider constructNativeProvider(SecureRandomProvider random)
@@ -150,11 +171,21 @@ namespace org.whispersystems.curve25519
             Curve25519Provider provider = null;
             TypeInfo curve25519TypeInfo = curve25519Impl.GetTypeInfo();
 
-            //class must implement Curve25519Provider base class 
-            if (curve25519TypeInfo.BaseType != typeof(Curve25519Provider))
+            #region Validation: Class must implement Curve25519Provider base class
+            Type baseType = curve25519TypeInfo.BaseType;
+            bool basedOnCurve25519Provider = false;
+            while (baseType != typeof(System.Object))
             {
-                throw new ArgumentException("Class must be a subclass of " + typeof(Curve25519Provider).Name);
+                if(baseType == typeof(Curve25519Provider))
+                {
+                    basedOnCurve25519Provider = true;
+                    break;
+                }
+                baseType = baseType.GetTypeInfo().BaseType;
             }
+            if(!basedOnCurve25519Provider)
+                throw new ArgumentException("Class must be a subclass of " + typeof(Curve25519Provider).Name);
+            #endregion
 
             IEnumerator<ConstructorInfo> ctorEnum = curve25519TypeInfo.DeclaredConstructors.GetEnumerator();
             while (ctorEnum.MoveNext())

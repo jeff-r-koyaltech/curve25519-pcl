@@ -1,4 +1,5 @@
 ﻿using org.whispersystems.curve25519;
+using org.whispersystems.curve25519.csharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,11 @@ namespace curve25519
 
         public CSharpCurve25519Provider() :
             base(new BouncyCastleDotNETSha512Provider(), new PCLSecureRandomProvider())
+        {
+        }
+
+        public CSharpCurve25519Provider(Sha512 sha, SecureRandomProvider random)
+            : base(sha, random)
         {
         }
 
