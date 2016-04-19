@@ -105,7 +105,7 @@ static int negative(sbyte b)
                 e[i] += carry;
                 carry = (byte)(e[i] + 8);
                 carry >>= 4;
-                e[i] = (byte)(e[i] - carry << 4);
+                e[i] -= (byte)(carry << 4);
             }
             e[63] += carry;
             /* each e[i] is between -8 and 8 */
