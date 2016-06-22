@@ -1,3 +1,20 @@
+﻿/** 
+ * Copyright (C) 2015 langboost
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 using System;
 
 namespace org.whispersystems.curve25519.csharp
@@ -39,7 +56,7 @@ namespace org.whispersystems.curve25519.csharp
             Fe_tobytes.fe_tobytes(curve25519_pubkey_out, mont_x);
         }
 
-        public static int curve25519_sign(Sha512 sha512provider, byte[] signature_out,
+        public static int curve25519_sign(ISha512 sha512provider, byte[] signature_out,
                             byte[] curve25519_privkey,
                             byte[] msg, int msg_len,
                             byte[] random)
@@ -65,7 +82,7 @@ namespace org.whispersystems.curve25519.csharp
             return 0;
         }
 
-        public static int curve25519_verify(Sha512 sha512provider, byte[] signature,
+        public static int curve25519_verify(ISha512 sha512provider, byte[] signature,
                               byte[] curve25519_pubkey,
                               byte[] msg, int msg_len)
         {

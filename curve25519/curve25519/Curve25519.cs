@@ -1,3 +1,20 @@
+﻿/** 
+ * Copyright (C) 2015 langboost
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 using curve25519;
 using System;
@@ -30,30 +47,34 @@ namespace org.whispersystems.curve25519
      */
     public class Curve25519
     {
-
-        //public const string NATIVE = "native";
         /// <summary>
-        /// CSharp PCL-compatible implementation
+        /// Pure C#, PCL-compatible implementation
         /// </summary>
         public const string CSHARP   = "csharp";
-        //public const string J2ME   = "j2me";
-        //public const string BEST = "best";
+        /// <summary>
+        /// Pure C#, PCL-compatible, "donna"-optimized implementation
+        /// </summary>
+        public const string BEST = "best";
 
         public static Curve25519 getInstance(string type)
         {
             return getInstance(type, new BouncyCastleDotNETSha512Provider(), new PCLSecureRandomProvider());
         }
 
-        public static Curve25519 getInstance(string type, csharp.Sha512 sha, SecureRandomProvider random)
+        public static Curve25519 getInstance(string type, csharp.ISha512 sha, SecureRandomProvider random)
         {
-            //if      (NATIVE.equals(type)) return new Curve25519(constructNativeProvider(random));
-            //else if (JAVA.equals(type))   return new Curve25519(constructJavaProvider(random));
-            //else if (J2ME.equals(type))   return new Curve25519(constructJ2meProvider(random));
-            //else if (BEST.Equals(type)) return new Curve25519(constructOpportunisticProvider(random));
-            if (CSHARP.Equals(type))
-                return new Curve25519(constructCSharpProvider(sha, random));
-            else
-                throw new NoSuchProviderException(type);
+            switch (type)
+            {
+                case BEST:
+                default:
+                    {
+                        return new Curve25519(constructBestProvider(sha, random));
+                    }
+                case CSHARP:
+                    {
+                        return new Curve25519(constructCSharpProvider(sha, random));
+                    }
+            }
         }
 
         private readonly Curve25519Provider provider;
@@ -110,7 +131,7 @@ namespace org.whispersystems.curve25519
          * @param privateKey The Curve25519 (typically yours) private key.
          * @return A 32-byte shared secret.
          */
-        public byte[] calculateAgreement(byte[] publicKey, byte[] privateKey)
+        public byte[] calculateAgreement(byte[] privateKey, byte[] publicKey)
         {
             return provider.calculateAgreement(privateKey, publicKey);
         }
@@ -146,28 +167,26 @@ namespace org.whispersystems.curve25519
             return provider.verifySignature(publicKey, message, signature);
         }
 
-        private static Curve25519Provider constructCSharpProvider(csharp.Sha512 sha, SecureRandomProvider random)
+        private static Curve25519Provider constructCSharpProvider(csharp.ISha512 sha, SecureRandomProvider random)
         {
             return constructClass(typeof(CSharpCurve25519Provider), new object[] { sha, random });
+        }
+        private static Curve25519Provider constructBestProvider(csharp.ISha512 sha, SecureRandomProvider random)
+        {
+            return constructClass(typeof(DonnaCSharpCurve25519Provider), new object[] { sha, random });
         }
         /* TODO: Implement as appropriate to grow the flexibility of the library...
         private static Curve25519Provider constructNativeProvider(SecureRandomProvider random)
         {
             return constructClass("NativeCurve25519Provider", random);
         }
-
-        private static Curve25519Provider constructJ2meProvider(SecureRandomProvider random)
-        {
-            return constructClass("J2meCurve25519Provider", random);
-        }
-
-        private static Curve25519Provider constructOpportunisticProvider(SecureRandomProvider random)
-        {
-            return constructClass("OpportunisticCurve25519Provider", random);
-        }
         */
         private static Curve25519Provider constructClass(Type curve25519Impl, object[] ctorParams)
         {
+            if(ctorParams == null)
+            {
+                ctorParams = new object[] { };
+            }
             Curve25519Provider provider = null;
             TypeInfo curve25519TypeInfo = curve25519Impl.GetTypeInfo();
 
@@ -191,8 +210,12 @@ namespace org.whispersystems.curve25519
             while (ctorEnum.MoveNext())
             {
                 ConstructorInfo currCtor = ctorEnum.Current;
-                provider = (Curve25519Provider)currCtor.Invoke(null);
-                break;
+                ParameterInfo [] paramsInfo = currCtor.GetParameters();
+                if(paramsInfo.Length == ctorParams.Length)
+                {
+                    provider = (Curve25519Provider)currCtor.Invoke(ctorParams);
+                    break;
+                }
             }
             return provider;
         }

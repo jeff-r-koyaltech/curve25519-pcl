@@ -1,3 +1,20 @@
+﻿/** 
+ * Copyright (C) 2015 langboost
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 namespace org.whispersystems.curve25519.csharp
 {
 
@@ -10,10 +27,8 @@ namespace org.whispersystems.curve25519.csharp
         /// Constant-time equals comparison (resists side-channel attacks by avoiding branching)
         /// </summary>
         /// <returns>1 for yes, 0 for no</returns>
-#if DEBUG
-public 
-#endif
-static int equal(byte b, byte c)
+
+        public static int equal(byte b, byte c)
         {
             //uint ub = b;
             //uint uc = c;
@@ -30,10 +45,7 @@ static int equal(byte b, byte c)
             return (int)uresult;
         }
 
-#if DEBUG
-public 
-#endif
-static int negative(sbyte b)
+        public static int negative(sbyte b)
         {
             long x = b;//Value will be expanded and given a sign bit, according to the signed byte (0x0000....0b vs 0xFFFF....b1
             ulong ux = (ulong)x; //make it unsigned for zero-filled bit shifting

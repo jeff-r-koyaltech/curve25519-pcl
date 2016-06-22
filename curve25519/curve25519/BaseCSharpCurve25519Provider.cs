@@ -1,29 +1,32 @@
-/**
-* Copyright (C) 2015 Open Whisper Systems
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+﻿/** 
+ * Copyright (C) 2015 langboost
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 using org.whispersystems.curve25519.csharp;
 using System;
 
 namespace org.whispersystems.curve25519
 {
-
+    /// <summary>
+    /// Curve255919 in pure C#, without "donna" performance optimizations.
+    /// </summary>
     public abstract class BaseCSharpCurve25519Provider : Curve25519Provider
     {
 
-        private Sha512 sha512provider;
+        private ISha512 sha512provider;
         private SecureRandomProvider secureRandomProvider;
 
         public BaseCSharpCurve25519Provider()
@@ -32,7 +35,7 @@ namespace org.whispersystems.curve25519
             secureRandomProvider = null;
         }
 
-        protected BaseCSharpCurve25519Provider(Sha512 sha512provider,
+        protected BaseCSharpCurve25519Provider(ISha512 sha512provider,
                                              SecureRandomProvider secureRandomProvider)
         {
             this.sha512provider = sha512provider;
@@ -44,7 +47,7 @@ namespace org.whispersystems.curve25519
             this.secureRandomProvider = secureRandomProvider;
         }
 
-        public override void setSha512Provider(Sha512 sha512Provider)
+        public override void setSha512Provider(ISha512 sha512Provider)
         {
             this.sha512provider = sha512Provider;
         }

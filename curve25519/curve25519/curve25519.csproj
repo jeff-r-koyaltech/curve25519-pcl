@@ -92,14 +92,19 @@
     <Compile Include="csharp\scalarmult.cs" />
     <Compile Include="csharp\sc_muladd.cs" />
     <Compile Include="csharp\sc_reduce.cs" />
-    <Compile Include="csharp\Sha512.cs" />
+    <Compile Include="csharp\ISha512.cs" />
     <Compile Include="csharp\sign_modified.cs" />
     <Compile Include="Curve25519.cs" />
     <Compile Include="Curve25519KeyPair.cs" />
     <Compile Include="Curve25519Provider.cs" />
     <Compile Include="BouncyCastleDotNETSha512Provider.cs" />
-    <Compile Include="NoSuchProviderException.cs" />
+    <Compile Include="DonnaCSharpCurve25519Provider.cs" />
+    <Compile Include="donna\Curve25519Donna.cs" />
+    <Compile Include="donna\Limb10.cs" />
+    <Compile Include="donna\Limb19.cs" />
+    <Compile Include="donna\LimbN.cs" />
     <Compile Include="PCLSecureRandomProvider.cs" />
+    <Compile Include="pcl\IPclCloneable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecureRandomProvider.cs" />
   </ItemGroup>

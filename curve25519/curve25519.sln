@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "curve25519", "curve25519\curve25519.csproj", "{A7089355-5735-4E2B-929B-E7D727E3E41A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "curve25519Tests", "curve25519Tests\curve25519Tests.csproj", "{12D04A31-1196-4EA4-AA1A-CBDB78EE088A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "curve25519ProfilingHarness", "curve25519ProfilingHarness\curve25519ProfilingHarness.csproj", "{6D93BA59-2214-4B29-918F-039D5838A816}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,22 @@ Global
 		{12D04A31-1196-4EA4-AA1A-CBDB78EE088A}.Release|x86.ActiveCfg = Release|x86
 		{12D04A31-1196-4EA4-AA1A-CBDB78EE088A}.Release|x86.Build.0 = Release|x86
 		{12D04A31-1196-4EA4-AA1A-CBDB78EE088A}.Release|x86.Deploy.0 = Release|x86
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Debug|ARM.Build.0 = Debug|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Debug|x64.Build.0 = Debug|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Debug|x86.Build.0 = Debug|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Release|ARM.Build.0 = Release|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Release|x64.ActiveCfg = Release|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Release|x64.Build.0 = Release|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Release|x86.ActiveCfg = Release|Any CPU
+		{6D93BA59-2214-4B29-918F-039D5838A816}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
