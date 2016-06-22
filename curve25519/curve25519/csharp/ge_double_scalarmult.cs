@@ -1,12 +1,45 @@
+﻿/** 
+ * Copyright (C) 2015 langboost
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 namespace org.whispersystems.curve25519.csharp
 {
 
     public class Ge_double_scalarmult
     {
+        /// <summary>
+        /// DEBUG
+        /// </summary>
+        public static string ByteArrayToString(byte[] ba)
+        {
+            System.Text.StringBuilder hex = new System.Text.StringBuilder(ba.Length * 2);
+            int i = 0;
+            foreach (byte b in ba)
+            {
+                hex.AppendFormat("[{0}] => ", i);
+                hex.AppendFormat("0x{0:x}, ", b);
+                i++;
+            }
+                
+            return hex.ToString();
+        }
 
         //CONVERT #include "ge.h"
 
-        public static void slide(byte[] r, byte[] a)
+        public static void slide(sbyte[] r, byte[] a)
         {
             int i;
             int b;
@@ -14,12 +47,7 @@ namespace org.whispersystems.curve25519.csharp
 
             for (i = 0; i < 256; ++i)
             {
-                //CONVERT r[i] = 1 & (a[i >> 3] >> (i & 7));
-                //JAVA r[i] = (byte)(1 & (a[i >> 3] >>> (i & 7)));
-                //C# >>> equivalent seems to be using uint or ulong as the left operand so that the shift is zero-filled
-                //TODO: unit test this function and be sure it works in all expected scenarios..
-                uint unsigned_byte = (uint)a[i >> 3];
-                r[i] = (byte)(1 & (unsigned_byte >> (i & 7)));
+                r[i] = (sbyte)(1 & (sbyte)(((uint)(a[i >> 3])) >> (i & 7)));
             }
 
             for (i = 0; i < 256; ++i)
@@ -31,11 +59,12 @@ namespace org.whispersystems.curve25519.csharp
                         {
                             if (r[i] + (r[i + b] << b) <= 15)
                             {
-                                r[i] += (byte)(r[i + b] << b); r[i + b] = 0; //C# port added the (byte) cast
+                                r[i] += (sbyte)(r[i + b] << b);
+                                r[i + b] = 0;
                             }
                             else if (r[i] - (r[i + b] << b) >= -15)
                             {
-                                r[i] -= (byte)(r[i + b] << b); //C# port added the (byte) cast
+                                r[i] -= (sbyte)(r[i + b] << b);
                                 for (k = i + b; k < 256; ++k)
                                 {
                                     if (r[k] == 0)
@@ -110,8 +139,8 @@ namespace org.whispersystems.curve25519.csharp
 
         public static void ge_double_scalarmult_vartime(Ge_p2 r, byte[] a, Ge_p3 A, byte[] b)
         {
-            byte[] aslide = new byte[256];
-            byte[] bslide = new byte[256];
+            sbyte[] aslide = new sbyte[256];
+            sbyte[] bslide = new sbyte[256];
             Ge_cached[] Ai = new Ge_cached[8]; /* A,3A,5A,7A,9A,11A,13A,15A */
             for (int count = 0; count < 8; count++)
                 Ai[count] = new Ge_cached();
