@@ -122,13 +122,13 @@ namespace curve25519Tests
         [TestMethod]
         public void Test_fexpand()
         {
-            Limb10 output = new Limb10();
+            long [] output = new long[19];
             byte[] input_key = new byte[] {
                 0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,
                 0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21,0x21
             };
             Curve25519Donna.fexpand(output, input_key);
-            Limb10 expected = new Limb10(new long[] {
+            long[] expected = new long[] {
                 0x0000000001212121,
                 0x0000000000484848,
                 0x0000000000242424,
@@ -139,7 +139,7 @@ namespace curve25519Tests
                 0x0000000000242424,
                 0x0000000002121212,
                 0x0000000000848484
-            });
+            };
             for (int i = 0; i < 10; i++)
             {
                 Assert.AreEqual<long>(expected[i], output[i]);
@@ -170,7 +170,7 @@ namespace curve25519Tests
         [TestMethod]
         public void Test_fcontract()
         {
-            Limb10 input = new Limb10(new long[] {
+            long [] input = new long[] {
                 0x0000000001212121,
                 0x0000000000484848,
                 0x0000000000242424,
@@ -181,7 +181,7 @@ namespace curve25519Tests
                 0x0000000000242424,
                 0x0000000002121212,
                 0x0000000000848484
-            });
+            };
             byte[] output = new byte[32];
 
             Curve25519Donna.fcontract(output, input);
@@ -212,8 +212,8 @@ namespace curve25519Tests
                 decrementing[i] = j;
                 j--;
             }
-            Limb19 inc = new Limb19(incrementing);
-            Limb19 dec = new Limb19(decrementing);
+            long[] inc = (long[])incrementing.Clone();
+            long[] dec = (long[])decrementing.Clone();
 
             //First-run, don't swap (iswap = 0)
             Curve25519Donna.swap_conditional(inc, dec, 0);

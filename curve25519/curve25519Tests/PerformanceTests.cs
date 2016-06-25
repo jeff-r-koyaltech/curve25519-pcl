@@ -50,8 +50,8 @@ namespace curve25519Tests
         {
             SecureRandomProvider provider = new curve25519.PCLSecureRandomProvider();
 
-            curve25519.donna.Limb10 limb = new curve25519.donna.Limb10();
-            curve25519.donna.Limb10 limb2 = new curve25519.donna.Limb10();
+            long [] limb = new long[19];
+            long [] limb2 = new long [19];
             random_bytes = new byte[BYTES_SIZE];
             byte [] random_bytes2 = new byte[BYTES_SIZE];
 

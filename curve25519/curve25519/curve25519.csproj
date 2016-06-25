@@ -100,9 +100,6 @@
     <Compile Include="BouncyCastleDotNETSha512Provider.cs" />
     <Compile Include="DonnaCSharpCurve25519Provider.cs" />
     <Compile Include="donna\Curve25519Donna.cs" />
-    <Compile Include="donna\Limb10.cs" />
-    <Compile Include="donna\Limb19.cs" />
-    <Compile Include="donna\LimbN.cs" />
     <Compile Include="PCLSecureRandomProvider.cs" />
     <Compile Include="pcl\IPclCloneable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

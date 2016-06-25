@@ -234,3 +234,4 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/curve25519/WhyDoescontractexpandnotwork.txt

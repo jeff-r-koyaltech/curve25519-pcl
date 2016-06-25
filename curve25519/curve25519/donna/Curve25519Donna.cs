@@ -72,12 +72,12 @@ using S32 = System.Int32;
 
 namespace curve25519.donna
 {
-    public class Curve25519Donna
+    public static class Curve25519Donna
     {
         /// <summary>
         /// Sum two short form numbers: output += in
         /// </summary>
-        public static void fsum(LimbN output, LimbN input)
+        public static void fsum(Limb[] output, Limb[] input)
         {
             for (int i = 0; i < 10; i += 2)
             {
@@ -89,7 +89,7 @@ namespace curve25519.donna
         /// <summary>
         /// Find the difference of two numbers: output = in - output (note the order of the arguments!).
         /// </summary>
-        public static void fdifference(LimbN output, LimbN input)
+        public static void fdifference(Limb[] output, Limb[] input)
         {
             for (int i = 0; i < 10; ++i)
             {
@@ -100,7 +100,7 @@ namespace curve25519.donna
         /// <summary>
         /// Multiply a number by a scalar: output = in * scalar
         /// </summary>
-        public static void fscalar_product(LimbN output, LimbN input, Limb scalar)
+        public static void fscalar_product(Limb[] output, Limb[] input, Limb scalar)
         {
             for (int i = 0; i < 10; ++i)
             {
@@ -115,7 +115,7 @@ namespace curve25519.donna
         /// 
         /// output[x] &lt;= 14 * the largest product of the input limbs.
         /// </summary>
-        public static void fproduct(Limb19 output, LimbN in2, LimbN input)
+        public static void fproduct(Limb[] output, Limb[] in2, Limb[] input)
         {
             output[0] =
                 ((Limb)((S32)in2[0])) * ((S32)input[0]);
@@ -246,7 +246,7 @@ namespace curve25519.donna
         /// On entry: |output[i]| &lt; 14*2^54
         /// On exit: |output[0..8]| &lt; 280*2^54
         /// </summary>
-        public static void freduce_degree(Limb19 output)
+        public static void freduce_degree(Limb[] output)
         {
             /* Each of these shifts and adds ends up multiplying the value by 19.
             *
@@ -323,7 +323,7 @@ namespace curve25519.donna
         /// Reduce all coefficients of the short form input so that |x| &lt; 2^26.
         /// On entry: |output[i]| &lt; 280*2^54
         /// </summary>
-        public static void freduce_coefficients(Limb19 output)
+        public static void freduce_coefficients(Limb[] output)
         {
             output[10] = 0;
 
@@ -372,16 +372,16 @@ namespace curve25519.donna
         /// output must be distinct to both inputs. The output is reduced degree
         /// (indeed, one need only provide storage for 10 limbs) and |output[i]| &lt; 2^26.
         /// </summary>
-        public static void fmul(Limb10 output, Limb10 input, Limb10 input2)
+        public static void fmul(Limb[] output, Limb[] input, Limb[] input2)
         {
-            Limb19 t = new Limb19();
+            Limb[] t = new Limb[19];
 
             fproduct(t, input, input2);
             /* |t[i]| < 14*2^54 */
             freduce_degree(t);
             freduce_coefficients(t);
             /* |output[i]| < 2^26 */
-            t.CopyTo(output, 0, 10);
+            Array.Copy(t, 0, output, 0, 10);
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace curve25519.donna
         /// 
         /// output[x] &lt;= 14 * the largest product of the input limbs.
         /// </summary>
-        public static void fsquare_inner(Limb19 output, LimbN input)
+        public static void fsquare_inner(Limb[] output, Limb[] input)
         {
             output[0] = ((Limb)((S32)input[0])) * ((S32)input[0]);
             output[1] = 2 * ((Limb)((S32)input[0])) * ((S32)input[1]);
@@ -457,9 +457,9 @@ namespace curve25519.donna
         /// 
         /// On exit: The |output| argument is in reduced coefficients form (indeed, oneneed only provide storage for 10 limbs) and |out[i]| &lt; 2^26.
         /// </summary>
-        public static void fsquare(LimbN output, LimbN input)
+        public static void fsquare(Limb[] output, Limb[] input)
         {
-            Limb19 t = new Limb19();
+            Limb[] t = new Limb[19];
             fsquare_inner(t, input);
             /* |t[i]| < 14*2^54 because the largest product of two limbs will be <
              * 2^(27+27) and fsquare_inner adds together, at most, 14 of those
@@ -467,13 +467,13 @@ namespace curve25519.donna
             freduce_degree(t);
             freduce_coefficients(t);
             /* |t[i]| < 2^26 */
-            t.CopyTo(output, 0, 10);
+            Array.Copy(t, 0, output, 0, 10);
         }
 
         /// <summary>
         /// Expand a 32-byte array into polynomial form.
         /// </summary>
-        public static void fexpand(Limb10 output, byte[] input)
+        public static void fexpand(Limb[] output, byte[] input)
         {
             //TODO: Performance changes here.
             //This might be slow. It may be better to expand the function into 10 individual
@@ -534,7 +534,7 @@ namespace curve25519.donna
         /// <remarks>
         /// On entry: |input_limbs[i]| < 2^26
         /// </remarks>
-        public static void fcontract(byte[] output, Limb10 input_limbs)
+        public static void fcontract(byte[] output, Limb[] input_limbs)
         {
             int i;
             int j;
@@ -728,33 +728,33 @@ namespace curve25519.donna
         /// On entry and exit, the absolute value of the limbs of all inputs and outputs
         /// are< 2^26.
         /// </remarks>
-        public static void fmonty(Limb19 x2, Limb19 z2,
-                           ref Limb19 x3, ref Limb19 z3,
-                           LimbN x, LimbN z,
-                           LimbN xprime, LimbN zprime,
-                           Limb10 qmqp)
+        public static void fmonty(Limb[] x2, Limb[] z2,
+                           ref Limb[] x3, ref Limb[] z3,
+                           Limb[] x, Limb[] z,
+                           Limb[] xprime, Limb[] zprime,
+                           Limb[] qmqp)
         {
-            LimbN origx, origxprime;
-            Limb19 zzz, xx, zz, xxprime, zzprime, zzzprime, xxxprime;
+            Limb[] origx, origxprime;
+            Limb[] zzz, xx, zz, xxprime, zzprime, zzzprime, xxxprime;
 
-            origx = (LimbN)x.Clone();
+            origx = (Limb[])x.Clone();
 
             fsum(x, z);
             /* |x[i]| < 2^27 */
             fdifference(z, origx);  /* does x - z */
                                     /* |z[i]| < 2^27 */
-            origxprime = (LimbN)xprime.Clone();
+            origxprime = (Limb[])xprime.Clone();
 
             fsum(xprime, zprime);
             /* |xprime[i]| < 2^27 */
             fdifference(zprime, origxprime);
             /* |zprime[i]| < 2^27 */
-            xxprime = new Limb19();
+            xxprime = new Limb[19];
             fproduct(xxprime, xprime, z);
             /* |xxprime[i]| < 14*2^54: the largest product of two limbs will be <
              * 2^(27+27) and fproduct adds together, at most, 14 of those products.
              * (Approximating that to 2^58 doesn't work out.) */
-            zzprime = new Limb19();
+            zzprime = new Limb[19];
             fproduct(zzprime, x, zprime);
             /* |zzprime[i]| < 14*2^54 */
             freduce_degree(xxprime);
@@ -763,15 +763,15 @@ namespace curve25519.donna
             freduce_degree(zzprime);
             freduce_coefficients(zzprime);
             /* |zzprime[i]| < 2^26 */
-            origxprime = (LimbN)xxprime.Clone();
+            origxprime = (Limb[])xxprime.Clone();
             fsum(xxprime, zzprime);
             /* |xxprime[i]| < 2^27 */
             fdifference(zzprime, origxprime);
             /* |zzprime[i]| < 2^27 */
-            xxxprime = new Limb19();
+            xxxprime = new Limb[19];
             fsquare(xxxprime, xxprime);
             /* |xxxprime[i]| < 2^26 */
-            zzzprime = new Limb19();
+            zzzprime = new Limb[19];
             fsquare(zzzprime, zzprime);
             /* |zzzprime[i]| < 2^26 */
             fproduct(zzprime, zzzprime, qmqp);
@@ -779,13 +779,13 @@ namespace curve25519.donna
             freduce_degree(zzprime);
             freduce_coefficients(zzprime);
             /* |zzprime[i]| < 2^26 */
-            x3 = (Limb19)xxxprime.Clone();
-            z3 = (Limb19)zzprime.Clone();
+            x3 = (Limb[])xxxprime.Clone();
+            z3 = (Limb[])zzprime.Clone();
 
-            xx = new Limb19();
+            xx = new Limb[19];
             fsquare(xx, x);
             /* |xx[i]| < 2^26 */
-            zz = new Limb19();
+            zz = new Limb[19];
             fsquare(zz, z);
             /* |zz[i]| < 2^26 */
             fproduct(x2, xx, zz);
@@ -795,8 +795,7 @@ namespace curve25519.donna
             /* |x2[i]| < 2^26 */
             fdifference(zz, xx);  // does zz = xx - zz
                                   /* |zz[i]| < 2^27 */
-            zzz = new Limb19();
-            zzz.ZeroLimb(10, 0, 9);
+            zzz = new Limb[19];
             fscalar_product(zzz, zz, 121665);
             /* |zzz[i]| < 2^(27+17) */
             /* No need to call freduce_degree here:
@@ -824,7 +823,7 @@ namespace curve25519.donna
         /// and all all values in a[0..9], b[0..9] must have magnitude less than
         /// INT32_MAX.
         /// </remarks>
-        public static void swap_conditional(Limb19 a, Limb19 b, long iswap)
+        public static void swap_conditional(Limb[] a, Limb[] b, long iswap)
         {
             int i;
             S32 swap = (S32)(-iswap);
@@ -844,31 +843,31 @@ namespace curve25519.donna
         /// <param name="resultz">the z coordinate of the resulting curve point (short form)</param>
         /// <param name="n">a little endian, 32-byte number</param>
         /// <param name="q">a point of the curve (short form)</param>
-        public static void cmult(LimbN resultx, LimbN resultz, byte[] n, Limb10 q)
+        public static void cmult(Limb[] resultx, Limb[] resultz, byte[] n, Limb[] q)
         {
-            Limb19 a = new Limb19(new long[] { 0 });
-            Limb19 b = new Limb19(new long[] { 1 });
-            Limb19 c = new Limb19(new long[] { 1 });
-            Limb19 d = new Limb19(new long[] { 0 });
-            Limb19 nqpqx = a;
-            Limb19 nqpqz = b;
-            Limb19 nqx = c;
-            Limb19 nqz = d;
-            Limb19 t = new Limb19();
+            Limb[] a = new Limb[19] { 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+            Limb[] b = new Limb[19] { 1, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+            Limb[] c = new Limb[19] { 1, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+            Limb[] d = new Limb[19] { 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+            Limb[] nqpqx = a;
+            Limb[] nqpqz = b;
+            Limb[] nqx = c;
+            Limb[] nqz = d;
+            Limb[] t = new Limb[19];
 
-            Limb19 e = new Limb19(new long[] { 0 });
-            Limb19 f = new Limb19(new long[] { 1 });
-            Limb19 g = new Limb19(new long[] { 0 });
-            Limb19 h = new Limb19(new long[] { 1 });
+            Limb[] e = new Limb[19] { 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+            Limb[] f = new Limb[19] { 1, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+            Limb[] g = new Limb[19] { 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+            Limb[] h = new Limb[19] { 1, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
-            Limb19 nqpqx2 = e;
-            Limb19 nqpqz2 = f;
-            Limb19 nqx2 = g;
-            Limb19 nqz2 = h;
+            Limb[] nqpqx2 = e;
+            Limb[] nqpqz2 = f;
+            Limb[] nqx2 = g;
+            Limb[] nqz2 = h;
 
             uint i, j;
 
-            q.CopyTo(nqpqx, 0, 10);
+            Array.Copy(q, 0, nqpqx, 0, 10);
 
 
             for (i = 0; i < 32; ++i)
@@ -904,25 +903,26 @@ namespace curve25519.donna
                     mybyte <<= 1;
                 }
             }
-            nqx.CopyTo(resultx, 0, 10);
-            nqz.CopyTo(resultz, 0, 10);
+            Array.Copy(nqx, 0, resultx, 0, 10);
+
+            Array.Copy(nqz, 0, resultz, 0, 10);
         }
 
         // -----------------------------------------------------------------------------
         // Ported from djb's code
         // -----------------------------------------------------------------------------
-        public static void crecip(Limb10 output, Limb10 z)
+        public static void crecip(Limb[] output, Limb[] z)
         {
-            Limb10 z2 = new Limb10();
-            Limb10 z9 = new Limb10();
-            Limb10 z11 = new Limb10();
-            Limb10 z2_5_0 = new Limb10();
-            Limb10 z2_10_0 = new Limb10();
-            Limb10 z2_20_0 = new Limb10();
-            Limb10 z2_50_0 = new Limb10();
-            Limb10 z2_100_0 = new Limb10();
-            Limb10 t0 = new Limb10();
-            Limb10 t1 = new Limb10();
+            Limb[] z2 = new Limb[19];
+            Limb[] z9 = new Limb[19];
+            Limb[] z11 = new Limb[19];
+            Limb[] z2_5_0 = new Limb[19];
+            Limb[] z2_10_0 = new Limb[19];
+            Limb[] z2_20_0 = new Limb[19];
+            Limb[] z2_50_0 = new Limb[19];
+            Limb[] z2_100_0 = new Limb[19];
+            Limb[] t0 = new Limb[19];
+            Limb[] t1 = new Limb[19];
             int i;
 
             // z^2
@@ -1047,12 +1047,12 @@ namespace curve25519.donna
             fmul(output, t1, z11);
         }
 
-        public int curve25519_donna(byte[] mypublic, byte[] secret, byte[] basepoint)
+        public static int curve25519_donna(byte[] mypublic, byte[] secret, byte[] basepoint)
         {
-            Limb10 bp = new Limb10();
-            Limb10 x = new Limb10();
-            Limb10 z = new Limb10();
-            Limb10 zmone = new Limb10();
+            Limb[] bp = new Limb[19];
+            Limb[] x = new Limb[19];
+            Limb[] z = new Limb[19];
+            Limb[] zmone = new Limb[19];
             byte[] e = new byte[32];
             int i;
 

@@ -1,20 +1,22 @@
-﻿/** 
- * Copyright (C) 2015 langboost
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+﻿
 
+using curve25519.donna;
+/** 
+* Copyright (C) 2015 langboost
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 using org.whispersystems.curve25519;
 using org.whispersystems.curve25519.csharp;
 using System;
@@ -40,31 +42,17 @@ namespace curve25519
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0 };
 
-        private curve25519.donna.Curve25519Donna _donna;
-
-        private curve25519.donna.Curve25519Donna Donna
-        {
-            get
-            {
-                if (_donna == null)
-                {
-                    _donna = new curve25519.donna.Curve25519Donna();
-                }
-                return _donna;
-            }
-        }
-
         public override byte[] generatePublicKey(byte[] privateKey)
         {
             byte[] publicKey = new byte[32];
-            Donna.curve25519_donna(publicKey, privateKey, basepoint);
+            Curve25519Donna.curve25519_donna(publicKey, privateKey, basepoint);
             return publicKey;
         }
 
         public override byte[] calculateAgreement(byte[] ourPrivate, byte[] theirPublic)
         {
             byte[] sharedKeyAgreement = new byte[32];
-            Donna.curve25519_donna(sharedKeyAgreement, ourPrivate, theirPublic);
+            Curve25519Donna.curve25519_donna(sharedKeyAgreement, ourPrivate, theirPublic);
             return sharedKeyAgreement;
         }
 
