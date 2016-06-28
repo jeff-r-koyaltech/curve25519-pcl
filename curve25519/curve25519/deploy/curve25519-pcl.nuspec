@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>curve25519-pcl</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <title>curve25519-pcl</title>
     <authors>langboost</authors>
     <owners>langboost</owners>
@@ -11,11 +11,15 @@
     <iconUrl>https://raw.githubusercontent.com/langboost/curve25519-pcl/master/NuGetIcon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Curve25519 and Ed25519 sign/verify, implemented in C# as a portable class library.</description>
-    <releaseNotes>1.0.0 - Initial public release.</releaseNotes>
+    <releaseNotes>1.0.1 - Initial public release (nuspec was wrong for 1.0.0. Use 1.0.1 instead).</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>pcl curve25519 dotnet</tags>
     <dependencies>
       <dependency id="PCLCrypto" version="2.0.145" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="..\bin\Release\curve25519.dll" target="lib\portable-net45+win+wp80+MonoAndroid10+MonoTouch10" />
+    <file src="..\bin\Release\curve25519.pdb" target="lib\portable-net45+win+wp80+MonoAndroid10+MonoTouch10" />
+  </files>
 </package>
